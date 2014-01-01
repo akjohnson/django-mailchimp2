@@ -1,0 +1,4 @@
+Django==1.5.1
+mailchimp==2.0.7
+django-localflavor==1.0
+django-ipware==0.0.5
