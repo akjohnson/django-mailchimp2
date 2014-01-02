@@ -23,7 +23,7 @@ from .forms import SubscribeForm
 class IndexView(TemplateView):
     """Shows a list of the mailing lists."""
     
-    template_name = "MailLists/index.html"
+    template_name = "mailchimp2/index.html"
     
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
@@ -72,7 +72,7 @@ class ListBasedMixin(ContextMixin):
 class SubscribeFormView(FormView, ListBasedMixin):
     """Handles subscribing to the list."""
     
-    template_name = "MailLists/subscribe_form.html"
+    template_name = "mailchimp2/subscribe.html"
     form_class = SubscribeForm
 
     def get_form_kwargs(self):
