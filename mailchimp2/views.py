@@ -39,9 +39,13 @@ class IndexView(TemplateView):
 class ListBasedMixin(ContextMixin):
     """This encapsulates common behavior for views based on a particular list."""
     
-    def setup_mail(self):
+    def get_list_id(self):
         
         self.list_id = self.kwargs['list_id']
+    
+    def setup_mail(self):
+        
+        self.list_id = self.get_list_id()
         
         # keep this around in case we want to do queries on it later
         self.mail_api = get_mailchimp_api()
@@ -97,6 +101,6 @@ class SubscribeFormView(FormView, ListBasedMixin):
     def form_valid(self, form):
         logging.debug("FORM VALID")
         
-        email = form.cleaned_data['EMAIL']
+        self.merge_vars = form.get_updated_merge_vars()
         
-        return self.render_to_response(self.get_context_data(success=True, email=email))
+        return self.render_to_response(self.get_context_data(success=True, merge_vars=self.merge_vars))
