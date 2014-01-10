@@ -17,6 +17,9 @@ class SubscribeForm(forms.Form):
         self.mail_api = kwargs.pop('mail_api')
         self.list_id = kwargs.pop('list_id')
         self.subscriber_IP = kwargs.pop('subscriber_IP', None)
+        
+        # add the ability to turn off double opt in
+        self.double_optin = kwargs.pop('double_optin', True)
                 
         # automatically fetch merge vars or fetch them from the API
         self.merge_vars = kwargs.pop('merge_vars', None)
@@ -37,10 +40,12 @@ class SubscribeForm(forms.Form):
                 self.add_textfield(merge_var)
             if merge_var['field_type'] == 'zip':
                 self.add_zipfield(merge_var)
+            if merge_var['field_type'] == 'dropdown':
+                self.add_choicefield(merge_var, merge_var['field_type'])
             if merge_var['field_type'] == 'number':
-                logging.debug("Need to add number field")
+                self.add_numberfield(merge_var)
             if merge_var['field_type'] == 'phone':
-                logging.debug("Need to add in phone field.")
+                self.add_phonefield(merge_var)
             if merge_var['field_type'] == 'address':
                 logging.debug("Need to add address field")
             if merge_var['field_type'] in ('date', 'birthday'):
@@ -72,7 +77,8 @@ class SubscribeForm(forms.Form):
         
         try:
             self.mail_api.lists.subscribe(self.list_id, {"email": email},
-                merge_vars=updated_merge_vars)
+                merge_vars=updated_merge_vars,
+                double_optin=self.double_optin)
         except mailchimp.ListAlreadySubscribedError:
             self._errors[forms.forms.NON_FIELD_ERRORS] = "This email is already subscribed!"
             is_valid = False
@@ -158,3 +164,24 @@ class SubscribeForm(forms.Form):
             default_args['help_text'] = "Enter in your US zip code."
             
         self.fields[merge_var['tag']] = USZipCodeField(**default_args)
+        
+    def add_numberfield(self, merge_var):
+        """Adds in a number field based on a merge var."""
+
+        default_args = self.get_default_args(merge_var)
+        default_args['decimal_places'] = 2
+        
+        self.fields[merge_var['tag']] = forms.DecimalField(**default_args)
+   
+    def add_phonefield(self, merge_var):
+       """Adds in a US Phone field based on a merge var.  Relies on the localflavors app."""
+       
+       self.fields[merge_var['tag']] = USPhoneNumberField(**default_args)
+       
+    def add_choicefield(self, merge_var, choice_type):
+        """Adds in a field with choices."""
+        
+        default_args = self.get_default_args(merge_var)        
+        default_args['choices'] = [(choice, choice) for choice in merge_var['choices']]
+                
+        self.fields[merge_var['tag']] = forms.ChoiceField(**default_args)
