@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 from django import forms
 
-from localflavor.us.forms import USZipCodeField
+from localflavor.us.forms import USZipCodeField, USPhoneNumberField
 import mailchimp
 
 class SubscribeForm(forms.Form):
@@ -176,6 +176,8 @@ class SubscribeForm(forms.Form):
     def add_phonefield(self, merge_var):
        """Adds in a US Phone field based on a merge var.  Relies on the localflavors app."""
        
+       default_args = self.get_default_args(merge_var)
+
        self.fields[merge_var['tag']] = USPhoneNumberField(**default_args)
        
     def add_choicefield(self, merge_var, choice_type):
