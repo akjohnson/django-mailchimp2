@@ -40,7 +40,7 @@ class SubscribeForm(forms.Form):
                 self.add_textfield(merge_var)
             if merge_var['field_type'] == 'zip':
                 self.add_zipfield(merge_var)
-            if merge_var['field_type'] == 'dropdown':
+            if merge_var['field_type'] in ('dropdown', 'radio'):
                 self.add_choicefield(merge_var, merge_var['field_type'])
             if merge_var['field_type'] == 'number':
                 self.add_numberfield(merge_var)
@@ -183,7 +183,13 @@ class SubscribeForm(forms.Form):
         
         default_args = self.get_default_args(merge_var)        
         default_args['choices'] = [(choice, choice) for choice in merge_var['choices']]
-                
+
+        # use the appropriate form widget
+        if choice_type == "radio":
+            default_args['widget'] = forms.RadioSelect
+        else:
+            default_args['widget'] = forms.Select
+ 
         self.fields[merge_var['tag']] = forms.ChoiceField(**default_args)
 
     def add_datefield(self, merge_var):
