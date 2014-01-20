@@ -50,10 +50,8 @@ class SubscribeForm(forms.Form):
                 logging.debug("Need to add address field")
             if merge_var['field_type'] == 'date':
                 self.add_datefield(merge_var)
-            if merge_var['field_type'] == 'address':
-                logging.debug("Need to add in address field")
-            if merge_var['field_type'] == 'website':
-                logging.debug("Need to add in URL field")
+            if merge_var['field_type'] == 'url':
+                self.add_urlfield(merge_var)
     
     def is_valid(self):
         """This submits the form to the service. The reason this is done here
@@ -194,3 +192,10 @@ class SubscribeForm(forms.Form):
         default_args = self.get_default_args(merge_var)
         
         self.fields[merge_var['tag']] = forms.DateField(**default_args)
+
+    def add_urlfield(self, merge_var):
+        """Adds in a URL field."""
+
+        default_args = self.get_default_args(merge_var)
+
+        self.fields[merge_var['tag']] = forms.URLField(**default_args)
