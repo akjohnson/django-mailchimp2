@@ -48,8 +48,8 @@ class SubscribeForm(forms.Form):
                 self.add_phonefield(merge_var)
             if merge_var['field_type'] == 'address':
                 logging.debug("Need to add address field")
-            if merge_var['field_type'] in ('date', 'birthday'):
-                logging.debug("Need to add date/birthday field")
+            if merge_var['field_type'] == 'date':
+                self.add_datefield(merge_var)
             if merge_var['field_type'] == 'address':
                 logging.debug("Need to add in address field")
             if merge_var['field_type'] == 'website':
@@ -187,3 +187,10 @@ class SubscribeForm(forms.Form):
         default_args['choices'] = [(choice, choice) for choice in merge_var['choices']]
                 
         self.fields[merge_var['tag']] = forms.ChoiceField(**default_args)
+
+    def add_datefield(self, merge_var):
+        """Adds in a date (or birthday) field."""
+
+        default_args = self.get_default_args(merge_var)
+        
+        self.fields[merge_var['tag']] = forms.DateField(**default_args)
