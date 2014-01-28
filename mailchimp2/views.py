@@ -44,12 +44,12 @@ class ListBasedMixin(ContextMixin):
         self.list_id = self.kwargs['list_id']
     
     def setup_mail(self):
-        
-        self.list_id = self.get_list_id()
-        
+
+        self.get_list_id()       
+ 
         # keep this around in case we want to do queries on it later
         self.mail_api = get_mailchimp_api()
-        lists = self.mail_api.lists.list({'list_id':self.list_id})
+        lists = self.mail_api.lists.list({'list_id': self.list_id})
         self.list_info = lists['data'][0]
         
     def merge_vars(self):
@@ -59,8 +59,10 @@ class ListBasedMixin(ContextMixin):
         if not 'mail_api' in self.__dict__:
             self.setup_mail()
         
-        return self.mail_api.lists.merge_vars(
-            {'list_id':self.list_id})['data'][0]['merge_vars']
+        merge_vars = self.mail_api.lists.merge_vars(
+            {'list_id':self.list_id})
+
+        return merge_vars['data'][0]['merge_vars']
             
     def get_context_data(self, **kwargs):
         context = super(ListBasedMixin, self).get_context_data(**kwargs)
