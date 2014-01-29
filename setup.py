@@ -12,8 +12,6 @@ setup(
     zip_safe=False,
     package_data={
         'mailchimp': [
-            'templates/mailchimp2/*.html',
-            'locale/*/LC_MESSAGES/*',
         ],
     },
 )
